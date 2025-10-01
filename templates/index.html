@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등학생용 영어 Short Story 및 Teacher's Talk Script 자동 생성 에이전트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .example-btn {
+            background: #28a745;
+            margin-left: 10px;
+        }
+
+        .result-section {
+            padding: 30px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .story-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .script-section {
+            margin-top: 15px;
+        }
+
+        .script-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .script-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .metadata {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 영어 수업 자료 자동 생성 에이전트</h1>
+            <p>초등학생용 Short Story와 Teacher's Talk Script를 쉽게 만들어보세요</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form id="unitForm">
+                    <div class="form-group">
+                        <label for="communicative_functions">목표 의사소통 기능 (쉼표로 구분)</label>
+                        <input type="text" id="communicative_functions" 
+                               placeholder="예: 능력 묻고 답하기, 감정 묻고 답하기" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grammar_forms">목표 문법 형태 (쉼표로 구분)</label>
+                        <input type="text" id="grammar_forms" 
+                               placeholder="예: I can..., Can you...?, Yes, I can. / No, I can't." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vocabulary">목표 어휘 (쉼표로 구분)</label>
+                        <input type="text" id="vocabulary" 
+                               placeholder="예: bird, fish, frog, fly, swim, jump" required>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn" id="generateBtn">자료 생성하기</button>
+                        <button type="button" class="btn example-btn" id="exampleBtn">예시 데이터 불러오기</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div id="loadingDiv" class="loading" style="display: none;">
+                    <p>📚 수업 자료를 생성하고 있습니다...</p>
+                </div>
+
+                <div id="errorDiv" class="error" style="display: none;"></div>
+
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('unitForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingDiv = document.getElementById('loadingDiv');
+            const errorDiv = document.getElementById('errorDiv');
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            // UI 상태 초기화
+            generateBtn.disabled = true;
+            generateBtn.textContent = '생성 중...';
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            resultSection.classList.add('show');
+            
+            try {
+                // 폼 데이터 수집
+                const formData = {
+                    target_communicative_functions: document.getElementById('communicative_functions').value.split(',').map(s => s.trim()),
+                    target_grammar_forms: document.getElementById('grammar_forms').value.split(',').map(s => s.trim()),
+                    target_vocabulary: document.getElementById('vocabulary').value.split(',').map(s => s.trim())
+                };
+                
+                // API 호출
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result.data);
+                } else {
+                    showError(result.error);
+                }
+                
+            } catch (error) {
+                showError('네트워크 오류가 발생했습니다: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '자료 생성하기';
+                loadingDiv.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('exampleBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/example');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('communicative_functions').value = result.data.target_communicative_functions.join(', ');
+                    document.getElementById('grammar_forms').value = result.data.target_grammar_forms.join(', ');
+                    document.getElementById('vocabulary').value = result.data.target_vocabulary.join(', ');
+                }
+            } catch (error) {
+                showError('예시 데이터를 불러오는데 실패했습니다: ' + error.message);
+            }
+        });
+        
+        function displayResults(data) {
+            const resultContent = document.getElementById('resultContent');
+            
+            resultContent.innerHTML = `
+                <div class="result-card">
+                    <h3>📖 Short Story: ${data.short_story.title}</h3>
+                    <div class="story-content">
+                        ${data.short_story.content}
+                    </div>
+                    <div class="metadata">
+                        문장 수: ${data.short_story.sentence_count}개 | 단어 수: ${data.short_story.word_count}개
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('story')">이야기 복사</button>
+                </div>
+                
+                <div class="result-card">
+                    <h3>👩‍🏫 Teacher's Talk Script</h3>
+                    
+                    <div class="script-section">
+                        <div class="script-item">
+                            <strong>1. Opening (도입)</strong>
+                            ${data.teacher_script.opening.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>2. During-Reading (읽기 중)</strong>
+                            ${data.teacher_script.during_reading.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>3. After-Reading (읽기 후)</strong>
+                            ${data.teacher_script.after_reading.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>4. Key Expression Practice (핵심 표현 연습)</strong>
+                            ${data.teacher_script.key_expression_practice.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>5. Wrap-Up (마무리)</strong>
+                            ${data.teacher_script.wrap_up.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <button class="copy-btn" onclick="copyToClipboard('script')">스크립트 복사</button>
+                </div>
+                
+                <div class="result-card">
+                    <h3>📊 생성 정보</h3>
+                    <div class="metadata">
+                        <p><strong>생성 시간:</strong> ${data.metadata.generation_timestamp}</p>
+                        <p><strong>CEFR 레벨:</strong> ${data.metadata.cefr_level}</p>
+                        <p><strong>대상 학년:</strong> ${data.metadata.target_grade}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function copyToClipboard(type) {
+            const resultContent = document.getElementById('resultContent');
+            let textToCopy = '';
+            
+            if (type === 'story') {
+                const storyCard = resultContent.querySelector('.result-card');
+                textToCopy = storyCard.textContent;
+            } else if (type === 'script') {
+                const scriptCard = resultContent.querySelectorAll('.result-card')[1];
+                textToCopy = scriptCard.textContent;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다.');
+            });
+        }
+    </script>
+</body>
+</html>
+
