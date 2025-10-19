@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등학생용 영어 Short Story 및 Teacher's Talk Script 자동 생성 에이전트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info span {
+            margin-right: 15px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .example-btn {
+            background: #28a745;
+            margin-left: 10px;
+        }
+
+        .result-section {
+            padding: 30px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .story-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .script-section {
+            margin-top: 15px;
+        }
+
+        .script-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .script-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .metadata {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #138496;
+        }
+
+        .tts-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+
+        .tts-btn:hover {
+            background: #218838;
+        }
+
+        .tts-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .tts-controls {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .tts-controls label {
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .tts-controls select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-right: 15px;
+        }
+
+        .tts-controls input[type="range"] {
+            margin-right: 10px;
+        }
+
+        .tts-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .interactive-script {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .question-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .question-item.active {
+            border-color: #4caf50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .interaction-controls {
+            margin: 10px 0;
+        }
+
+        .record-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .record-btn:hover {
+            background: #d32f2f;
+        }
+
+        .record-btn.recording {
+            background: #ff5722;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .play-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .play-btn:hover {
+            background: #1976d2;
+        }
+
+        .transcription {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        .evaluation {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .feedback {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hattie-feedback {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .hattie-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .hattie-question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .hattie-answer {
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .strengths-list, .improvements-list, .actions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .strengths-list li::before {
+            content: "✅ ";
+        }
+
+        .improvements-list li::before {
+            content: "🎯 ";
+        }
+
+        .actions-list li::before {
+            content: "📝 ";
+        }
+
+        .hattie-principles {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .effect-size {
+            background: #ffd700;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .rewrite-section {
+            background: #f8f9fa;
+            border: 2px solid #6c757d;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .rewrite-activity {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed #007bff;
+            background: #e3f2fd;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #007bff;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: #0056b3;
+            background: #bbdefb;
+        }
+
+        .story-text {
+            line-height: 2;
+            font-size: 16px;
+            margin: 15px 0;
+        }
+
+        .rewrite-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .rewrite-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .rubric-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .rubric-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .rubric-item h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .rubric-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .activity-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .activity-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .activity-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .activity-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .activity-btn.secondary {
+            background: #6c757d;
+        }
+
+        .activity-btn.secondary:hover {
+            background: #545b62;
+        }
+
+        .activity-btn.success {
+            background: #28a745;
+        }
+
+        .activity-btn.success:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <span id="userName">사용자</span>
+                <span id="userSchool"></span>
+                <button class="logout-btn" onclick="logout()">로그아웃</button>
+            </div>
+            <h1>🎓 영어 수업 자료 자동 생성 에이전트</h1>
+            <p>초등학생용 Short Story와 Teacher's Talk Script를 쉽게 만들어보세요</p>
+            <p style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">
+                🔊 생성된 이야기는 소리내어 읽기 기능을 지원합니다
+            </p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form id="unitForm">
+                    <div class="form-group">
+                        <label for="communicative_functions">목표 의사소통 기능 (쉼표로 구분)</label>
+                        <input type="text" id="communicative_functions" 
+                               placeholder="예: 능력 묻고 답하기, 감정 묻고 답하기" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grammar_forms">목표 문법 형태 (쉼표로 구분)</label>
+                        <input type="text" id="grammar_forms" 
+                               placeholder="예: I can..., Can you...?, Yes, I can. / No, I can't." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vocabulary">목표 어휘 (쉼표로 구분)</label>
+                        <input type="text" id="vocabulary" 
+                               placeholder="예: bird, fish, frog, fly, swim, jump" required>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn" id="generateBtn">자료 생성하기</button>
+                        <button type="button" class="btn example-btn" id="exampleBtn">예시 데이터 불러오기</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div id="loadingDiv" class="loading" style="display: none;">
+                    <p>📚 수업 자료를 생성하고 있습니다...</p>
+                </div>
+
+                <div id="errorDiv" class="error" style="display: none;"></div>
+
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 인증 관련 변수
+        let currentUser = null;
+
+        // 인증 관련 함수들
+        function getToken() {
+            return localStorage.getItem('access_token');
+        }
+
+        function setToken(token) {
+            localStorage.setItem('access_token', token);
+        }
+
+        function removeToken() {
+            localStorage.removeItem('access_token');
+        }
+
+        function getAuthHeaders() {
+            const token = getToken();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function checkAuth() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    updateUserInfo();
+                    return true;
+                } else {
+                    removeToken();
+                    window.location.href = '/';
+                    return false;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                removeToken();
+                window.location.href = '/';
+                return false;
+            }
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                if (currentUser.school) {
+                    document.getElementById('userSchool').textContent = `(${currentUser.school})`;
+                }
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/auth/logout', {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                removeToken();
+                window.location.href = '/';
+            }
+        }
+
+        // 페이지 로드 시 인증 확인
+        window.addEventListener('load', async () => {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) {
+                return;
+            }
+        });
+
+        document.getElementById('unitForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingDiv = document.getElementById('loadingDiv');
+            const errorDiv = document.getElementById('errorDiv');
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            // UI 상태 초기화
+            generateBtn.disabled = true;
+            generateBtn.textContent = '생성 중...';
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            resultSection.classList.add('show');
+            
+            try {
+                // 폼 데이터 수집
+                const formData = {
+                    target_communicative_functions: document.getElementById('communicative_functions').value.split(',').map(s => s.trim()),
+                    target_grammar_forms: document.getElementById('grammar_forms').value.split(',').map(s => s.trim()),
+                    target_vocabulary: document.getElementById('vocabulary').value.split(',').map(s => s.trim())
+                };
+                
+                // API 호출
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result.data);
+                } else {
+                    showError(result.error);
+                }
+                
+            } catch (error) {
+                showError('네트워크 오류가 발생했습니다: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '자료 생성하기';
+                loadingDiv.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('exampleBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/example', {
+                    headers: getAuthHeaders()
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('communicative_functions').value = result.data.target_communicative_functions.join(', ');
+                    document.getElementById('grammar_forms').value = result.data.target_grammar_forms.join(', ');
+                    document.getElementById('vocabulary').value = result.data.target_vocabulary.join(', ');
+                }
+            } catch (error) {
+                showError('예시 데이터를 불러오는데 실패했습니다: ' + error.message);
+            }
+        });
+        
+        function displayResults(data) {
+            const resultContent = document.getElementById('resultContent');
+            
+            // TTS 상태 초기화
+            isPlaying = false;
+            speechSynthesis.cancel();
+            
+            // 현재 스토리 저장
+            currentStory = data.short_story.content;
+            
+            resultContent.innerHTML = `
+                <div class="result-card">
+                    <h3>📖 Short Story: ${data.short_story.title}</h3>
+                    <div class="story-content">
+                        ${data.short_story.content}
+                    </div>
+                    <div class="metadata">
+                        문장 수: ${data.short_story.sentence_count}개 | 단어 수: ${data.short_story.word_count}개
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('story')">이야기 복사</button>
+                    <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()">🔊 소리내어 읽기</button>
+                    
+                    <div class="tts-controls" id="ttsControls" style="display: none;">
+                        <label for="voiceSelect">음성:</label>
+                        <select id="voiceSelect">
+                            <option value="">기본 음성</option>
+                        </select>
+                        
+                        <label for="rateRange">속도:</label>
+                        <input type="range" id="rateRange" min="0.5" max="2" step="0.1" value="1">
+                        <span id="rateValue">1.0</span>
+                        
+                        <label for="pitchRange">음조:</label>
+                        <input type="range" id="pitchRange" min="0.5" max="2" step="0.1" value="1">
+                        <span id="pitchValue">1.0</span>
+                        
+                        <button class="tts-btn" onclick="stopTTS()">⏹️ 정지</button>
+                        <div class="tts-status" id="ttsStatus"></div>
+                    </div>
+                    
+                    <div class="rewrite-section">
+                        <h4>✏️ Rewrite 활동</h4>
+                        <p>스토리를 다시 써보며 영어 실력을 향상시켜보세요!</p>
+                        
+                        <div class="activity-buttons">
+                            <button class="activity-btn" onclick="startVocabularyFill()">1단계: 어휘 빈칸 채우기</button>
+                            <button class="activity-btn secondary" onclick="startFullRewrite()">2단계: 전체 스토리 다시 쓰기</button>
+                        </div>
+                        
+                        <div id="rewriteActivityContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>👩‍🏫 Teacher's Talk Script</h3>
+                    
+                    <div class="interactive-script">
+                        <h4>🎤 상호작용 수업 모드</h4>
+                        <p>질문을 듣고 답변을 녹음해보세요. AI가 평가하고 피드백을 제공합니다.</p>
+                        <button class="btn" onclick="startInteractiveMode()">상호작용 수업 시작</button>
+                    </div>
+                    
+                    <div class="script-section">
+                        <div class="script-item">
+                            <strong>1. Opening (도입)</strong>
+                            ${data.teacher_script.opening.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>2. During-Reading (읽기 중)</strong>
+                            ${data.teacher_script.during_reading.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>3. After-Reading (읽기 후)</strong>
+                            ${data.teacher_script.after_reading.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>4. Key Expression Practice (핵심 표현 연습)</strong>
+                            ${data.teacher_script.key_expression_practice.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>5. Retelling Guidance (리텔링 가이드) - 9개 영역 기반</strong>
+                            <div style="background: #e8f4fd; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 14px; color: #0066cc;">
+                                <strong>평가 영역:</strong> Characters & Setting, Initiating Event, Internal Reaction, Attempts/Actions, Result/Resolution, Ending/Closure, Causal Connection, Temporal Connection, Global Organization
+                            </div>
+                            ${data.teacher_script.retelling_guidance.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>6. Evaluation Criteria (평가 기준) - 0-3점 척도 (총 27점 만점)</strong>
+                            <div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 14px; color: #856404;">
+                                <strong>점수 기준:</strong> 21-27점: 우수, 15-20점: 양호, 9-14점: 보통, 0-8점: 개선 필요
+                            </div>
+                            ${data.teacher_script.evaluation_criteria.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                        
+                        <div class="script-item">
+                            <strong>7. Wrap-Up (마무리)</strong>
+                            ${data.teacher_script.wrap_up.map(item => `<div style="margin: 8px 0;">${item}</div>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <button class="copy-btn" onclick="copyToClipboard('script')">스크립트 복사</button>
+                </div>
+                
+                <div class="result-card">
+                    <h3>📊 품질 검증 결과</h3>
+                    <div class="metadata">
+                        <p><strong>전체 점수:</strong> ${data.quality_check.overall_score}/100점</p>
+                        <p><strong>이야기 품질:</strong> ${data.quality_check.story_quality.score}/100점</p>
+                        <p><strong>스크립트 품질:</strong> ${data.quality_check.script_quality.score}/100점</p>
+                        ${data.quality_check.story_quality.issues.length > 0 ? 
+                            `<p><strong>이야기 개선사항:</strong> ${data.quality_check.story_quality.issues.join(', ')}</p>` : ''}
+                        ${data.quality_check.script_quality.issues.length > 0 ? 
+                            `<p><strong>스크립트 개선사항:</strong> ${data.quality_check.script_quality.issues.join(', ')}</p>` : ''}
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>📊 생성 정보</h3>
+                    <div class="metadata">
+                        <p><strong>생성 시간:</strong> ${data.metadata.generation_timestamp}</p>
+                        <p><strong>CEFR 레벨:</strong> ${data.metadata.cefr_level}</p>
+                        <p><strong>대상 학년:</strong> ${data.metadata.target_grade}</p>
+                    </div>
+                </div>
+            `;
+            
+            // TTS 음성 목록 다시 로드
+            setTimeout(() => {
+                loadVoices();
+            }, 100);
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function copyToClipboard(type) {
+            const resultContent = document.getElementById('resultContent');
+            let textToCopy = '';
+            
+            if (type === 'story') {
+                const storyCard = resultContent.querySelector('.result-card');
+                textToCopy = storyCard.textContent;
+            } else if (type === 'script') {
+                const scriptCard = resultContent.querySelectorAll('.result-card')[1];
+                textToCopy = scriptCard.textContent;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다.');
+            });
+        }
+
+        // TTS 관련 변수
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let isPlaying = false;
+
+        // 페이지 로드 시 음성 목록 초기화
+        window.addEventListener('load', function() {
+            loadVoices();
+            // 음성 목록이 비동기적으로 로드될 수 있으므로 이벤트 리스너 추가
+            speechSynthesis.addEventListener('voiceschanged', loadVoices);
+        });
+
+        function loadVoices() {
+            const voiceSelect = document.getElementById('voiceSelect');
+            if (!voiceSelect) return;
+            
+            const voices = speechSynthesis.getVoices();
+            voiceSelect.innerHTML = '<option value="">기본 음성</option>';
+            
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        function toggleTTS() {
+            const ttsControls = document.getElementById('ttsControls');
+            const ttsBtn = document.getElementById('ttsBtn');
+            
+            if (ttsControls.style.display === 'none') {
+                ttsControls.style.display = 'block';
+                ttsBtn.textContent = '🔊 소리내어 읽기';
+            } else {
+                if (isPlaying) {
+                    stopTTS();
+                } else {
+                    startTTS();
+                }
+            }
+        }
+
+        function startTTS() {
+            const resultContent = document.getElementById('resultContent');
+            const storyCard = resultContent.querySelector('.result-card');
+            const storyText = storyCard.querySelector('.story-content').textContent;
+            
+            if (!storyText) {
+                alert('읽을 이야기가 없습니다.');
+                return;
+            }
+
+            // 이전 재생 중지
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(storyText);
+            currentUtterance = utterance;
+
+            // 음성 설정
+            const voiceSelect = document.getElementById('voiceSelect');
+            const rateRange = document.getElementById('rateRange');
+            const pitchRange = document.getElementById('pitchRange');
+            const ttsStatus = document.getElementById('ttsStatus');
+            const ttsBtn = document.getElementById('ttsBtn');
+
+            if (voiceSelect.value) {
+                const voices = speechSynthesis.getVoices();
+                utterance.voice = voices[voiceSelect.value];
+            }
+
+            utterance.rate = parseFloat(rateRange.value);
+            utterance.pitch = parseFloat(pitchRange.value);
+            utterance.lang = 'en-US'; // 영어로 설정
+
+            // 이벤트 리스너
+            utterance.onstart = function() {
+                isPlaying = true;
+                ttsBtn.textContent = '⏸️ 일시정지';
+                ttsStatus.textContent = '읽는 중...';
+            };
+
+            utterance.onend = function() {
+                isPlaying = false;
+                ttsBtn.textContent = '🔊 소리내어 읽기';
+                ttsStatus.textContent = '완료';
+            };
+
+            utterance.onerror = function(event) {
+                isPlaying = false;
+                ttsBtn.textContent = '🔊 소리내어 읽기';
+                ttsStatus.textContent = '오류: ' + event.error;
+                alert('음성 읽기 중 오류가 발생했습니다: ' + event.error);
+            };
+
+            utterance.onpause = function() {
+                isPlaying = false;
+                ttsBtn.textContent = '▶️ 재생';
+                ttsStatus.textContent = '일시정지됨';
+            };
+
+            utterance.onresume = function() {
+                isPlaying = true;
+                ttsBtn.textContent = '⏸️ 일시정지';
+                ttsStatus.textContent = '읽는 중...';
+            };
+
+            // 재생 시작
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopTTS() {
+            speechSynthesis.cancel();
+            isPlaying = false;
+            const ttsBtn = document.getElementById('ttsBtn');
+            const ttsStatus = document.getElementById('ttsStatus');
+            
+            if (ttsBtn) {
+                ttsBtn.textContent = '🔊 소리내어 읽기';
+            }
+            if (ttsStatus) {
+                ttsStatus.textContent = '정지됨';
+            }
+        }
+
+        // 슬라이더 값 업데이트
+        document.addEventListener('DOMContentLoaded', function() {
+            const rateRange = document.getElementById('rateRange');
+            const pitchRange = document.getElementById('pitchRange');
+            const rateValue = document.getElementById('rateValue');
+            const pitchValue = document.getElementById('pitchValue');
+
+            if (rateRange && rateValue) {
+                rateRange.addEventListener('input', function() {
+                    rateValue.textContent = this.value;
+                });
+            }
+
+            if (pitchRange && pitchValue) {
+                pitchRange.addEventListener('input', function() {
+                    pitchValue.textContent = this.value;
+                });
+            }
+        });
+
+        // 상호작용 모드 관련 변수
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let allEvaluations = []; // 모든 평가 결과 저장
+
+        function startInteractiveMode() {
+            // 질문들을 수집
+            questions = [];
+            allEvaluations = []; // 평가 결과 초기화
+            const scriptItems = document.querySelectorAll('.script-item');
+            
+            scriptItems.forEach((item, index) => {
+                const questionDivs = item.querySelectorAll('div[style*="margin: 8px 0"]');
+                questionDivs.forEach(div => {
+                    const text = div.textContent.trim();
+                    if (text && !text.includes('(교사용 보조 발화')) {
+                        questions.push({
+                            text: text,
+                            section: item.querySelector('strong').textContent,
+                            index: questions.length
+                        });
+                    }
+                });
+            });
+
+            if (questions.length === 0) {
+                alert('질문을 찾을 수 없습니다.');
+                return;
+            }
+
+            // 상호작용 모드 UI 생성
+            createInteractiveUI();
+            showQuestion(0);
+        }
+
+        function createInteractiveUI() {
+            const interactiveScript = document.querySelector('.interactive-script');
+            interactiveScript.innerHTML = `
+                <h4>🎤 상호작용 수업 모드</h4>
+                <div id="questionContainer"></div>
+                <div id="interactionControls" class="interaction-controls" style="display: none;">
+                    <button class="play-btn" onclick="playQuestion()">🔊 질문 듣기</button>
+                    <button class="record-btn" id="recordBtn" onclick="toggleRecording()">🎤 답변 녹음</button>
+                    <button class="btn" onclick="nextQuestion()" id="nextBtn" disabled>다음 질문</button>
+                    <button class="btn" onclick="resetInteractiveMode()">처음부터</button>
+                </div>
+                <div id="progressInfo" style="margin-top: 10px; font-size: 14px; color: #666;"></div>
+            `;
+        }
+
+        function showQuestion(index) {
+            if (index >= questions.length) {
+                showFinalResults();
+                return;
+            }
+
+            currentQuestionIndex = index;
+            const question = questions[index];
+            
+            const questionContainer = document.getElementById('questionContainer');
+            questionContainer.innerHTML = `
+                <div class="question-item active">
+                    <div class="question-text">${question.section}</div>
+                    <div style="margin: 10px 0; font-size: 16px;">${question.text}</div>
+                    <div id="transcription${index}" class="transcription" style="display: none;"></div>
+                    <div id="evaluation${index}" class="evaluation" style="display: none;"></div>
+                    <div id="feedback${index}" class="feedback" style="display: none;"></div>
+                </div>
+            `;
+
+            document.getElementById('interactionControls').style.display = 'block';
+            document.getElementById('progressInfo').textContent = `질문 ${index + 1} / ${questions.length}`;
+            
+            // 질문 자동 재생
+            setTimeout(() => playQuestion(), 500);
+        }
+
+        function playQuestion() {
+            const question = questions[currentQuestionIndex];
+            const utterance = new SpeechSynthesisUtterance(question.text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        transcribeAudio(audioBlob);
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    const recordBtn = document.getElementById('recordBtn');
+                    recordBtn.textContent = '⏹️ 녹음 중지';
+                    recordBtn.classList.add('recording');
+                })
+                .catch(err => {
+                    console.error('마이크 접근 실패:', err);
+                    alert('마이크 접근이 필요합니다. 브라우저 설정을 확인해주세요.');
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                
+                isRecording = false;
+                const recordBtn = document.getElementById('recordBtn');
+                recordBtn.textContent = '🎤 답변 녹음';
+                recordBtn.classList.remove('recording');
+            }
+        }
+
+        async function transcribeAudio(audioBlob) {
+            const transcriptionDiv = document.getElementById(`transcription${currentQuestionIndex}`);
+            transcriptionDiv.innerHTML = '<div class="loading-spinner"></div> 전사 중...';
+            transcriptionDiv.style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.wav');
+
+                const response = await fetch('/api/transcribe', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    transcriptionDiv.innerHTML = `<strong>전사 결과:</strong> ${result.transcription}`;
+                    evaluateAnswer(result.transcription);
+                } else {
+                    transcriptionDiv.innerHTML = `<strong>전사 실패:</strong> ${result.error}`;
+                }
+            } catch (error) {
+                console.error('전사 오류:', error);
+                transcriptionDiv.innerHTML = '<strong>전사 오류:</strong> 서버와의 통신에 실패했습니다.';
+            }
+        }
+
+        async function evaluateAnswer(transcription) {
+            const evaluationDiv = document.getElementById(`evaluation${currentQuestionIndex}`);
+            const feedbackDiv = document.getElementById(`feedback${currentQuestionIndex}`);
+            
+            evaluationDiv.innerHTML = '<div class="loading-spinner"></div> 평가 중...';
+            evaluationDiv.style.display = 'block';
+
+            try {
+                const question = questions[currentQuestionIndex];
+                const response = await fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        question: question.text,
+                        answer: transcription,
+                        section: question.section
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    evaluationDiv.innerHTML = `
+                        <strong>평가 결과:</strong><br>
+                        <div class="score">점수: ${result.score}/10</div>
+                        <div>정확성: ${result.accuracy}</div>
+                        <div>유창성: ${result.fluency}</div>
+                        <div>문법: ${result.grammar}</div>
+                    `;
+                    
+                    feedbackDiv.innerHTML = `
+                        <strong>피드백:</strong><br>
+                        ${result.feedback}
+                    `;
+                    feedbackDiv.style.display = 'block';
+                    
+                    // 평가 결과 저장
+                    allEvaluations.push({
+                        question: question.text,
+                        answer: transcription,
+                        score: result.score,
+                        accuracy: result.accuracy,
+                        fluency: result.fluency,
+                        grammar: result.grammar,
+                        feedback: result.feedback
+                    });
+                } else {
+                    evaluationDiv.innerHTML = `<strong>평가 실패:</strong> ${result.error}`;
+                }
+            } catch (error) {
+                console.error('평가 오류:', error);
+                evaluationDiv.innerHTML = '<strong>평가 오류:</strong> 서버와의 통신에 실패했습니다.';
+            }
+
+            // 다음 질문 버튼 활성화
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            showQuestion(currentQuestionIndex + 1);
+        }
+
+        function resetInteractiveMode() {
+            currentQuestionIndex = 0;
+            createInteractiveUI();
+            showQuestion(0);
+        }
+
+        function showFinalResults() {
+            const interactiveScript = document.querySelector('.interactive-script');
+            interactiveScript.innerHTML = `
+                <h4>🎉 상호작용 수업 완료!</h4>
+                <p>모든 질문에 답변하셨습니다. 수고하셨습니다!</p>
+                <button class="btn" onclick="generateHattieFeedback()">📊 Hattie 종합 피드백 보기</button>
+                <button class="btn" onclick="resetInteractiveMode()">다시 시작</button>
+            `;
+        }
+
+        // Rewrite 활동 관련 변수
+        let currentStory = '';
+        let currentActivity = null;
+
+        function startVocabularyFill() {
+            if (!currentStory) {
+                alert('먼저 스토리를 생성해주세요.');
+                return;
+            }
+
+            const container = document.getElementById('rewriteActivityContainer');
+            container.innerHTML = '<div class="loading-spinner"></div> 어휘 빈칸 채우기 활동을 생성하고 있습니다...';
+
+            fetch('/api/create_rewrite_activity', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    story_content: currentStory,
+                    activity_type: 'vocabulary_fill'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentActivity = data.activity;
+                    displayVocabularyFillActivity(data.activity);
+                } else {
+                    container.innerHTML = `<div class="error">활동 생성 실패: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="error">활동 생성 중 오류가 발생했습니다.</div>';
+            });
+        }
+
+        function startFullRewrite() {
+            if (!currentStory) {
+                alert('먼저 스토리를 생성해주세요.');
+                return;
+            }
+
+            const container = document.getElementById('rewriteActivityContainer');
+            container.innerHTML = '<div class="loading-spinner"></div> 전체 다시 쓰기 활동을 생성하고 있습니다...';
+
+            fetch('/api/create_rewrite_activity', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    story_content: currentStory,
+                    activity_type: 'full_rewrite'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentActivity = data.activity;
+                    displayFullRewriteActivity(data.activity);
+                } else {
+                    container.innerHTML = `<div class="error">활동 생성 실패: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="error">활동 생성 중 오류가 발생했습니다.</div>';
+            });
+        }
+
+        function displayVocabularyFillActivity(activity) {
+            const container = document.getElementById('rewriteActivityContainer');
+            
+            // 빈칸이 있는 스토리 텍스트 생성
+            let storyWithBlanks = activity.modified_story;
+            const blanks = activity.blanks;
+            
+            // 빈칸을 입력 필드로 교체
+            blanks.forEach(blank => {
+                const inputId = blank.id;
+                const placeholder = blank.type === 'collocation' ? '구문 입력 (예: in the sky)' : '단어 입력';
+                storyWithBlanks = storyWithBlanks.replace(
+                    `__${inputId}__`,
+                    `<input type="text" class="blank-input" id="${inputId}" placeholder="${placeholder}" data-type="${blank.type}">`
+                );
+            });
+
+            container.innerHTML = `
+                <div class="rewrite-activity">
+                    <h4>1단계: 어휘 빈칸 채우기</h4>
+                    <p>빈칸에 적절한 단어나 구문을 입력해주세요. (단일 단어 30-40%, 구문 60-70%)</p>
+                    
+                    <div class="story-text">
+                        ${storyWithBlanks}
+                    </div>
+                    
+                    <div class="activity-buttons">
+                        <button class="activity-btn success" onclick="submitVocabularyFill()">제출하기</button>
+                        <button class="activity-btn secondary" onclick="resetRewriteActivity()">다시 시작</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayFullRewriteActivity(activity) {
+            const container = document.getElementById('rewriteActivityContainer');
+            
+            container.innerHTML = `
+                <div class="rewrite-activity">
+                    <h4>2단계: 전체 스토리 다시 쓰기</h4>
+                    <p>원본 스토리를 듣고 자신만의 스토리를 작성해보세요.</p>
+                    
+                    <div class="story-text" style="text-align: center; margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <strong>원본 스토리 듣기:</strong><br><br>
+                        <button class="activity-btn" onclick="playOriginalStory()" id="playStoryBtn">🔊 스토리 듣기</button>
+                        <button class="activity-btn secondary" onclick="stopOriginalStory()" id="stopStoryBtn" style="display: none;">⏹️ 정지</button>
+                        <div id="storyStatus" style="margin-top: 10px; font-size: 14px; color: #666;"></div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <label for="rewriteTextarea"><strong>당신의 스토리:</strong></label>
+                        <textarea id="rewriteTextarea" class="rewrite-textarea" placeholder="원본 스토리를 듣고 여기에 스토리를 작성해주세요..."></textarea>
+                    </div>
+                    
+                    <div class="activity-buttons">
+                        <button class="activity-btn success" onclick="submitFullRewrite()">제출하기</button>
+                        <button class="activity-btn secondary" onclick="resetRewriteActivity()">다시 시작</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitVocabularyFill() {
+            const blanks = currentActivity.blanks;
+            const studentAnswers = {};
+            
+            // 학생 답안 수집
+            blanks.forEach(blank => {
+                const input = document.getElementById(blank.id);
+                if (input) {
+                    studentAnswers[blank.id] = input.value.trim();
+                }
+            });
+
+            // 평가 요청
+            const container = document.getElementById('rewriteActivityContainer');
+            container.innerHTML = '<div class="loading-spinner"></div> 평가 중입니다...';
+
+            fetch('/api/evaluate_rewrite_activity', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    activity_type: 'vocabulary_fill',
+                    original_story: currentActivity.original_story,
+                    student_answers: studentAnswers
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayRewriteEvaluation(data.evaluation);
+                } else {
+                    container.innerHTML = `<div class="error">평가 실패: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="error">평가 중 오류가 발생했습니다.</div>';
+            });
+        }
+
+        function submitFullRewrite() {
+            const studentStory = document.getElementById('rewriteTextarea').value.trim();
+            
+            if (!studentStory) {
+                alert('스토리를 작성해주세요.');
+                return;
+            }
+
+            // 평가 요청
+            const container = document.getElementById('rewriteActivityContainer');
+            container.innerHTML = '<div class="loading-spinner"></div> 평가 중입니다...';
+
+            fetch('/api/evaluate_rewrite_activity', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    activity_type: 'full_rewrite',
+                    original_story: currentActivity.original_story,
+                    student_content: studentStory
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayRewriteEvaluation(data.evaluation);
+                } else {
+                    container.innerHTML = `<div class="error">평가 실패: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="error">평가 중 오류가 발생했습니다.</div>';
+            });
+        }
+
+        function displayRewriteEvaluation(evaluation) {
+            const container = document.getElementById('rewriteActivityContainer');
+            
+            const rubricScores = evaluation.score;
+            const totalScore = evaluation.total_score;
+            const feedback = evaluation.feedback;
+            
+            container.innerHTML = `
+                <div class="rewrite-activity">
+                    <h4>📊 평가 결과</h4>
+                    
+                    <div class="rubric-scores">
+                        <div class="rubric-item">
+                            <h4>배경 설정</h4>
+                            <div class="rubric-score">${rubricScores.setting?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>등장인물</h4>
+                            <div class="rubric-score">${rubricScores.characters?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>문제 상황</h4>
+                            <div class="rubric-score">${rubricScores.problem?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>사건 전개</h4>
+                            <div class="rubric-score">${rubricScores.events?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>해결 과정</h4>
+                            <div class="rubric-score">${rubricScores.resolution?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>주제</h4>
+                            <div class="rubric-score">${rubricScores.theme?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>어휘 사용</h4>
+                            <div class="rubric-score">${rubricScores.vocabulary?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>문법</h4>
+                            <div class="rubric-score">${rubricScores.grammar?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                        <div class="rubric-item">
+                            <h4>일관성</h4>
+                            <div class="rubric-score">${rubricScores.coherence?.toFixed(1) || '0.0'}/4.0</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 20px 0;">
+                        <h3>총점: ${totalScore.toFixed(1)}/4.0</h3>
+                    </div>
+                    
+                    <div class="hattie-feedback">
+                        <h4>🎓 Hattie 기반 피드백</h4>
+                        <div class="hattie-section">
+                            <div class="hattie-question">📈 전체 학습 평가</div>
+                            <div class="hattie-answer">${feedback.overall_assessment}</div>
+                        </div>
+                        
+                        <div class="hattie-section">
+                            <div class="hattie-question">🎯 Hattie의 3가지 핵심 질문</div>
+                            <div style="margin: 10px 0;">
+                                <strong>1. Where am I going? (목표는 무엇인가?)</strong><br>
+                                ${feedback.hattie_analysis?.where_am_i_going || '분석 중...'}
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <strong>2. How am I going? (어떻게 하고 있는가?)</strong><br>
+                                ${feedback.hattie_analysis?.how_am_i_going || '분석 중...'}
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <strong>3. Where to next? (다음에 무엇을 해야 하는가?)</strong><br>
+                                ${feedback.hattie_analysis?.where_to_next || '분석 중...'}
+                            </div>
+                        </div>
+                        
+                        <div class="hattie-section">
+                            <div class="hattie-question">✅ 강점</div>
+                            <ul class="strengths-list">
+                                ${feedback.strengths?.map(strength => `<li>${strength}</li>`).join('') || '<li>분석 중...</li>'}
+                            </ul>
+                        </div>
+                        
+                        <div class="hattie-section">
+                            <div class="hattie-question">🎯 개선 영역</div>
+                            <ul class="improvements-list">
+                                ${feedback.areas_for_improvement?.map(area => `<li>${area}</li>`).join('') || '<li>분석 중...</li>'}
+                            </ul>
+                        </div>
+                        
+                        <div class="hattie-section">
+                            <div class="hattie-question">📝 구체적 행동 계획</div>
+                            <ul class="actions-list">
+                                ${feedback.specific_actions?.map(action => `<li>${action}</li>`).join('') || '<li>분석 중...</li>'}
+                            </ul>
+                        </div>
+                        
+                        <div class="hattie-section">
+                            <div class="hattie-question">💪 격려 메시지</div>
+                            <div class="hattie-answer">${feedback.encouragement || '수고하셨습니다!'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-buttons">
+                        <button class="activity-btn" onclick="resetRewriteActivity()">새로운 활동 시작</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetRewriteActivity() {
+            const container = document.getElementById('rewriteActivityContainer');
+            container.innerHTML = '';
+            currentActivity = null;
+        }
+
+        function playOriginalStory() {
+            if (!currentActivity || !currentActivity.original_story) {
+                alert('원본 스토리를 찾을 수 없습니다.');
+                return;
+            }
+
+            const playBtn = document.getElementById('playStoryBtn');
+            const stopBtn = document.getElementById('stopStoryBtn');
+            const statusDiv = document.getElementById('storyStatus');
+
+            // 기존 음성 정지
+            speechSynthesis.cancel();
+
+            // 음성 재생
+            const utterance = new SpeechSynthesisUtterance(currentActivity.original_story);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+
+            utterance.onstart = function() {
+                playBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+                statusDiv.textContent = '스토리를 재생하고 있습니다...';
+            };
+
+            utterance.onend = function() {
+                playBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+                statusDiv.textContent = '재생 완료';
+            };
+
+            utterance.onerror = function() {
+                playBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+                statusDiv.textContent = '재생 중 오류가 발생했습니다.';
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopOriginalStory() {
+            speechSynthesis.cancel();
+            
+            const playBtn = document.getElementById('playStoryBtn');
+            const stopBtn = document.getElementById('stopStoryBtn');
+            const statusDiv = document.getElementById('storyStatus');
+
+            playBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            statusDiv.textContent = '정지됨';
+        }
+
+        async function generateHattieFeedback() {
+            if (allEvaluations.length === 0) {
+                alert('평가 결과가 없습니다.');
+                return;
+            }
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = `
+                <div class="hattie-feedback">
+                    <div class="loading-spinner"></div>
+                    <p>Hattie의 Visible Learning 연구를 바탕으로 종합 피드백을 생성하고 있습니다...</p>
+                </div>
+            `;
+            
+            const interactiveScript = document.querySelector('.interactive-script');
+            interactiveScript.appendChild(loadingDiv);
+
+            try {
+                // 모든 질문과 답변을 하나의 텍스트로 결합
+                const combinedQuestion = allEvaluations.map(eval => eval.question).join(' ');
+                const combinedAnswer = allEvaluations.map(eval => eval.answer).join(' ');
+
+                const response = await fetch('/api/comprehensive_feedback', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        question: combinedQuestion,
+                        answer: combinedAnswer,
+                        individual_scores: allEvaluations
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayHattieFeedback(result.hattie_feedback, result.average_score);
+                } else {
+                    alert('종합 피드백 생성에 실패했습니다: ' + result.error);
+                }
+            } catch (error) {
+                console.error('종합 피드백 오류:', error);
+                alert('종합 피드백 생성 중 오류가 발생했습니다.');
+            } finally {
+                loadingDiv.remove();
+            }
+        }
+
+        function displayHattieFeedback(hattieData, averageScore) {
+            const interactiveScript = document.querySelector('.interactive-script');
+            
+            const hattieHTML = `
+                <div class="hattie-feedback">
+                    <h3>🎓 Hattie의 Visible Learning 기반 종합 피드백</h3>
+                    <div class="effect-size">피드백 효과 크기: 0.70 (높은 효과)</div>
+                    
+                    <div class="hattie-section">
+                        <div class="hattie-question">📈 전체 학습 평가</div>
+                        <div class="hattie-answer">${hattieData.overall_assessment}</div>
+                        <div class="score">평균 점수: ${averageScore.toFixed(1)}/10</div>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">🎯 Hattie의 3가지 핵심 질문</div>
+                        <div style="margin: 10px 0;">
+                            <strong>1. Where am I going? (목표는 무엇인가?)</strong><br>
+                            ${hattieData.hattie_analysis.where_am_i_going}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>2. How am I going? (어떻게 하고 있는가?)</strong><br>
+                            ${hattieData.hattie_analysis.how_am_i_going}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>3. Where to next? (다음에 무엇을 해야 하는가?)</strong><br>
+                            ${hattieData.hattie_analysis.where_to_next}
+                        </div>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">✅ 강점</div>
+                        <ul class="strengths-list">
+                            ${hattieData.strengths.map(strength => `<li>${strength}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">🎯 개선 영역</div>
+                        <ul class="improvements-list">
+                            ${hattieData.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">📝 구체적 행동 계획</div>
+                        <ul class="actions-list">
+                            ${hattieData.specific_actions.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">🧠 자기조절 학습 팁</div>
+                        <ul class="actions-list">
+                            ${hattieData.self_regulation_tips.map(tip => `<li>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">🎯 다음 목표</div>
+                        <ul class="actions-list">
+                            ${hattieData.next_goals.map(goal => `<li>${goal}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="hattie-section">
+                        <div class="hattie-question">💪 격려 메시지</div>
+                        <div class="hattie-answer">${hattieData.encouragement}</div>
+                    </div>
+
+                    <div class="hattie-principles">
+                        <strong>📚 Hattie의 피드백 원칙:</strong><br>
+                        • 과제 수준: 무엇이 잘못되었는지<br>
+                        • 과정 수준: 어떻게 개선할 수 있는지<br>
+                        • 자기조절 수준: 학습자가 스스로 모니터링하는 방법
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="resetInteractiveMode()">새로운 수업 시작</button>
+                    </div>
+                </div>
+            `;
+            
+            interactiveScript.innerHTML = hattieHTML;
+        }
+    </script>
+</body>
+</html>
+

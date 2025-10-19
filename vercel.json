@@ -2,21 +2,73 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",
+      "src": "api/login.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/dashboard.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/login.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/register.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/me.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/generate.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/example.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/transcribe.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/evaluate.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/feedback.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/rewrite/create.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/rewrite/evaluate.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "app.py"
+      "src": "/",
+      "dest": "/api/login"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/api/dashboard"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ],
   "env": {
     "PYTHONPATH": "."
   },
   "functions": {
-    "app.py": {
+    "api/**/*.py": {
       "maxDuration": 30
     }
   }

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어 수업 자료 생성 시스템 - 로그인</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .divider {
+            margin: 1.5rem 0;
+            position: relative;
+            text-align: center;
+            color: #999;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .register-form {
+            display: none;
+        }
+
+        .register-form.show {
+            display: block;
+        }
+
+        .login-form.hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">📚 영어 수업 자료 생성</div>
+        <div class="subtitle">AI 기반 초등학교 영어 수업 자료 자동 생성 시스템</div>
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+            <strong>🚀 데모 계정으로 바로 시작하세요!</strong><br>
+            <strong>이메일:</strong> demo@example.com<br>
+            <strong>비밀번호:</strong> demo123
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- 로딩 스피너 -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>처리 중...</p>
+        </div>
+
+        <!-- 로그인 폼 -->
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="loginEmail">이메일</label>
+                <input type="email" id="loginEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">비밀번호</label>
+                <input type="password" id="loginPassword" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">로그인</button>
+        </form>
+
+        <div class="divider">
+            <span>또는</span>
+        </div>
+
+        <button id="showRegister" class="btn btn-secondary">회원가입</button>
+
+        <!-- 회원가입 폼 -->
+        <form id="registerForm" class="register-form">
+            <div class="form-group">
+                <label for="registerName">이름</label>
+                <input type="text" id="registerName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">이메일</label>
+                <input type="email" id="registerEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">비밀번호</label>
+                <input type="password" id="registerPassword" name="password" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="registerSchool">소속 학교 (선택사항)</label>
+                <input type="text" id="registerSchool" name="school">
+            </div>
+            <button type="submit" class="btn btn-primary">회원가입</button>
+            <button type="button" id="showLogin" class="btn btn-secondary">로그인으로 돌아가기</button>
+        </form>
+    </div>
+
+    <script>
+        // DOM 요소들
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+
+        // 폼 전환
+        showRegister.addEventListener('click', () => {
+            loginForm.classList.add('hide');
+            registerForm.classList.add('show');
+        });
+
+        showLogin.addEventListener('click', () => {
+            registerForm.classList.remove('show');
+            loginForm.classList.remove('hide');
+        });
+
+        // 메시지 표시 함수
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function showLoading() {
+            loading.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        // 토큰 저장
+        function saveToken(token) {
+            localStorage.setItem('access_token', token);
+        }
+
+        // 토큰 가져오기
+        function getToken() {
+            return localStorage.getItem('access_token');
+        }
+
+        // 로그인 처리
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+            showLoading();
+
+            const formData = new FormData(loginForm);
+            const loginData = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    saveToken(data.access_token);
+                    showSuccess('로그인 성공! 대시보드로 이동합니다.');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showError(data.detail || '로그인에 실패했습니다.');
+                }
+            } catch (error) {
+                showError('네트워크 오류가 발생했습니다.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // 회원가입 처리
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+            showLoading();
+
+            const formData = new FormData(registerForm);
+            const registerData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                school: formData.get('school') || null,
+                role: 'teacher'
+            };
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(registerData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('회원가입이 완료되었습니다! 로그인해주세요.');
+                    registerForm.reset();
+                    setTimeout(() => {
+                        registerForm.classList.remove('show');
+                        loginForm.classList.remove('hide');
+                    }, 2000);
+                } else {
+                    showError(data.detail || '회원가입에 실패했습니다.');
+                }
+            } catch (error) {
+                showError('네트워크 오류가 발생했습니다.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // 페이지 로드 시 토큰 확인
+        window.addEventListener('load', () => {
+            const token = getToken();
+            if (token) {
+                // 토큰이 있으면 대시보드로 리다이렉트
+                window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>
