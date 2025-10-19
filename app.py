@@ -29,9 +29,13 @@ load_dotenv()
 app = FastAPI(title="English Teaching Agent", version="1.0.0")
 
 # JWT 설정
-SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'fallback-secret-key-for-development-only')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# JWT_SECRET_KEY가 설정되지 않은 경우 경고
+if SECRET_KEY == 'fallback-secret-key-for-development-only':
+    print("WARNING: JWT_SECRET_KEY not set! Using fallback key. This is not secure for production!")
 
 # Supabase 클라이언트 초기화
 supabase_url = os.getenv('SUPABASE_URL')
@@ -39,7 +43,14 @@ supabase_key = os.getenv('SUPABASE_ANON_KEY')
 supabase: Optional[Client] = None
 
 if supabase_url and supabase_key:
-    supabase = create_client(supabase_url, supabase_key)
+    try:
+        supabase = create_client(supabase_url, supabase_key)
+        print("Supabase client initialized successfully")
+    except Exception as e:
+        print(f"WARNING: Failed to initialize Supabase client: {e}")
+        supabase = None
+else:
+    print("WARNING: Supabase credentials not found. Database features will be disabled.")
 
 # 인증 설정
 security = HTTPBearer()
@@ -88,7 +99,17 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 def get_current_user(user_id: str = Depends(verify_token)):
     """현재 사용자 정보 가져오기"""
     if not supabase:
-        raise HTTPException(status_code=500, detail="Database not configured")
+        # Supabase가 없는 경우 데모 사용자 반환
+        if user_id == "demo-user":
+            return {
+                "id": "demo-user",
+                "email": "demo@example.com",
+                "name": "데모 사용자",
+                "school": "데모 학교",
+                "role": "teacher"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
     
     try:
         result = supabase.table('users').select('*').eq('id', user_id).execute()
@@ -112,7 +133,25 @@ async def dashboard(request: Request, current_user: dict = Depends(get_current_u
 async def login(user_data: UserLogin):
     """사용자 로그인"""
     if not supabase:
-        raise HTTPException(status_code=500, detail="Database not configured")
+        # Supabase가 없는 경우 간단한 데모 로그인
+        if user_data.email == "demo@example.com" and user_data.password == "demo123":
+            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = create_access_token(
+                data={"sub": "demo-user"}, expires_delta=access_token_expires
+            )
+            return {
+                "access_token": access_token,
+                "token_type": "bearer",
+                "user": {
+                    "id": "demo-user",
+                    "email": "demo@example.com",
+                    "name": "데모 사용자",
+                    "school": "데모 학교",
+                    "role": "teacher"
+                }
+            }
+        else:
+            raise HTTPException(status_code=401, detail="Invalid credentials. Use demo@example.com / demo123 for demo")
     
     try:
         # Supabase Auth를 사용한 로그인
