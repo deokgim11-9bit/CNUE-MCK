@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어 수업 자료 생성 시스템</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .status {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .demo-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 영어 수업 자료 생성 시스템</h1>
+        
+        <div class="status">
+            <h2>✅ 시스템 상태: 정상 작동</h2>
+            <p>Vercel 배포가 성공적으로 완료되었습니다!</p>
+        </div>
+
+        <div class="demo-info">
+            <h3>🚀 데모 계정으로 바로 시작하세요!</h3>
+            <p><strong>이메일:</strong> demo@example.com</p>
+            <p><strong>비밀번호:</strong> demo123</p>
+        </div>
+
+        <div>
+            <a href="/api/login" class="btn">로그인 페이지로 이동</a>
+            <a href="/api/dashboard" class="btn">대시보드로 이동</a>
+        </div>
+
+        <div style="margin-top: 30px; font-size: 14px; color: #666;">
+            <p>API 엔드포인트 테스트:</p>
+            <ul style="text-align: left; max-width: 400px; margin: 0 auto;">
+                <li><a href="/api/" target="_blank">/api/</a> - API 상태 확인</li>
+                <li><a href="/api/auth/login" target="_blank">/api/auth/login</a> - 로그인 API</li>
+                <li><a href="/api/example" target="_blank">/api/example</a> - 예시 데이터 API</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
