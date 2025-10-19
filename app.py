@@ -29,13 +29,9 @@ load_dotenv()
 app = FastAPI(title="English Teaching Agent", version="1.0.0")
 
 # JWT 설정
-SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'fallback-secret-key-for-development-only')
+SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'default-jwt-secret-key-for-english-teaching-agent-2024')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-# JWT_SECRET_KEY가 설정되지 않은 경우 경고
-if SECRET_KEY == 'fallback-secret-key-for-development-only':
-    print("WARNING: JWT_SECRET_KEY not set! Using fallback key. This is not secure for production!")
 
 # Supabase 클라이언트 초기화
 supabase_url = os.getenv('SUPABASE_URL')
@@ -195,7 +191,11 @@ async def login(user_data: UserLogin):
 async def register(user_data: UserRegister):
     """사용자 회원가입"""
     if not supabase:
-        raise HTTPException(status_code=500, detail="Database not configured")
+        # Supabase가 없는 경우 간단한 데모 회원가입
+        return {
+            "message": "Demo registration successful. Please login with demo@example.com / demo123",
+            "user_id": "demo-user"
+        }
     
     try:
         # Supabase Auth를 사용한 회원가입

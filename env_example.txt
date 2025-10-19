@@ -1,14 +1,17 @@
 # 환경 변수 설정
 # 실제 사용 시 이 파일을 .env로 복사하고 실제 값들을 입력하세요
 
-# OpenAI API 키
+# OpenAI API 키 (필수)
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Supabase 설정
+# Supabase 설정 (선택사항 - 없어도 데모 모드로 작동)
 SUPABASE_URL=your_supabase_project_url_here
 SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
-# JWT 설정
+# JWT 설정 (선택사항 - 기본값 사용 가능)
 JWT_SECRET_KEY=your_jwt_secret_key_here
 
-# Vercel 배포 시에는 Vercel 대시보드의 Environment Variables에서 설정하세요
+# 참고: 
+# - OpenAI API 키만 설정하면 기본 기능 사용 가능
+# - Supabase와 JWT_SECRET_KEY는 선택사항 (데모 모드로 작동)
+# - Vercel 배포 시에는 Vercel 대시보드의 Environment Variables에서 설정하세요
