@@ -59,7 +59,8 @@ rewrite_generator = RewriteGenerator()
 openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # 템플릿 설정
-templates = Jinja2Templates(directory="templates")
+template_dir = os.path.join(os.path.dirname(__file__), "templates")
+templates = Jinja2Templates(directory=template_dir)
 
 # 인증 관련 함수들
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
