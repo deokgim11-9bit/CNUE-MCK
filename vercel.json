@@ -2,11 +2,52 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxDuration": 30
-      }
+      "src": "api/login.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/dashboard.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/login.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/register.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/auth/me.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/generate.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/example.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/transcribe.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/evaluate.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/feedback.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/rewrite/create.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/rewrite/evaluate.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -19,8 +60,44 @@
       "dest": "/api/dashboard"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/auth/login",
+      "dest": "/api/auth/login"
+    },
+    {
+      "src": "/api/auth/register",
+      "dest": "/api/auth/register"
+    },
+    {
+      "src": "/api/auth/me",
+      "dest": "/api/auth/me"
+    },
+    {
+      "src": "/api/generate",
+      "dest": "/api/generate"
+    },
+    {
+      "src": "/api/example",
+      "dest": "/api/example"
+    },
+    {
+      "src": "/api/transcribe",
+      "dest": "/api/transcribe"
+    },
+    {
+      "src": "/api/evaluate",
+      "dest": "/api/evaluate"
+    },
+    {
+      "src": "/api/comprehensive_feedback",
+      "dest": "/api/feedback"
+    },
+    {
+      "src": "/api/create_rewrite_activity",
+      "dest": "/api/rewrite/create"
+    },
+    {
+      "src": "/api/evaluate_rewrite_activity",
+      "dest": "/api/rewrite/evaluate"
     }
   ],
   "env": {
