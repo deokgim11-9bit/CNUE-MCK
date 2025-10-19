@@ -6,9 +6,11 @@
 
 ## 주요 기능
 
-- **Short Story 자동 생성**: CEFR A1 수준의 8-10문장 짧은 이야기 생성
-- **Teacher's Talk Script 자동 생성**: 5단계 구조의 교사 대본 생성
+- **LLM 기반 Short Story 자동 생성**: OpenAI GPT를 활용한 CEFR A1 수준의 8-10문장 짧은 이야기 생성
+- **LLM 기반 Teacher's Talk Script 자동 생성**: OpenAI GPT를 활용한 5단계 구조의 교사 대본 생성
 - **맞춤형 자료 생성**: 입력된 목표 언어 요소에 정확히 부합하는 자료 생성
+- **품질 검증 시스템**: 생성된 내용의 품질을 자동으로 검증하고 점수 제공
+- **폴백 메커니즘**: LLM 실패 시 규칙 기반 생성으로 자동 전환
 - **웹 기반 사용자 인터페이스**: 직관적이고 사용하기 쉬운 웹 인터페이스
 
 ## 설치 및 실행
@@ -19,25 +21,47 @@
 pip install -r requirements.txt
 ```
 
-### 2. 데모 실행
+### 2. OpenAI API 키 설정
+
+1. `env_example.txt` 파일을 `.env`로 복사
+2. OpenAI API 키를 `.env` 파일에 설정:
+
+```bash
+cp env_example.txt .env
+```
+
+`.env` 파일을 열어서 실제 OpenAI API 키를 입력하세요:
+```
+OPENAI_API_KEY=your_actual_openai_api_key_here
+```
+
+### 3. 웹 애플리케이션 실행
+
+#### 로컬 개발 서버
+```bash
+# FastAPI 개발 서버 실행
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+# 또는
+python -m uvicorn app:app --reload
+```
+
+웹 브라우저에서 `http://localhost:8000`으로 접속하여 사용할 수 있습니다.
+
+#### Vercel 배포
+자세한 배포 방법은 [DEPLOYMENT.md](DEPLOYMENT.md)를 참조하세요.
+
+### 4. 데모 실행 (선택사항)
 
 ```bash
 python demo.py
 ```
 
-### 3. 웹 애플리케이션 실행
-
-```bash
-python app.py
-```
-
-웹 브라우저에서 `http://localhost:5000`으로 접속하여 사용할 수 있습니다.
-
 ## 사용 방법
 
 ### 웹 인터페이스 사용
 
-1. 웹 브라우저에서 `http://localhost:5000` 접속
+1. 웹 브라우저에서 `http://localhost:8000` 접속 (로컬) 또는 배포된 URL 접속
 2. 다음 정보를 입력:
    - **목표 의사소통 기능**: 예) "능력 묻고 답하기"
    - **목표 문법 형태**: 예) "I can..., Can you...?, Yes, I can. / No, I can't."
@@ -67,13 +91,19 @@ python app.py
 ## 프로젝트 구조
 
 ```
-├── app.py                      # Flask 웹 애플리케이션
+├── app.py                      # FastAPI 웹 애플리케이션
+├── api/
+│   └── index.py               # Vercel API 엔트리 포인트
 ├── demo.py                     # 데모 실행 스크립트
 ├── english_agent.py            # 메인 에이전트 클래스
 ├── models.py                   # 데이터 모델 정의
 ├── story_generator.py          # Short Story 생성기
 ├── teacher_script_generator.py # Teacher's Talk Script 생성기
 ├── requirements.txt            # Python 의존성
+├── vercel.json                 # Vercel 배포 설정
+├── supabase_schema.sql         # Supabase 데이터베이스 스키마
+├── env_example.txt             # 환경 변수 예시
+├── DEPLOYMENT.md               # 배포 가이드
 ├── templates/
 │   └── index.html              # 웹 인터페이스 템플릿
 └── README.md                   # 프로젝트 문서
@@ -81,10 +111,13 @@ python app.py
 
 ## 기술 스택
 
-- **Backend**: Python, Flask
+- **Backend**: Python, FastAPI
 - **Frontend**: HTML, CSS, JavaScript
+- **Database**: Supabase (PostgreSQL)
+- **Deployment**: Vercel
 - **Data Validation**: Pydantic
 - **Template Engine**: Jinja2
+- **AI Integration**: OpenAI GPT-4o, Whisper
 
 ## 라이선스
 

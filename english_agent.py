@@ -81,4 +81,83 @@ class EnglishTeachingAgent:
             "target_grammar_forms": ["I can...", "Can you...?", "Yes, I can. / No, I can't."],
             "target_vocabulary": ["bird", "fish", "frog", "fly", "swim", "jump"]
         }
+    
+    def validate_generated_content(self, content: 'GeneratedContent') -> Dict[str, Any]:
+        """생성된 내용의 품질을 검증"""
+        quality_check = {
+            "story_quality": self._check_story_quality(content.short_story),
+            "script_quality": self._check_script_quality(content.teacher_script),
+            "overall_score": 0
+        }
+        
+        # 전체 점수 계산 (0-100)
+        story_score = quality_check["story_quality"]["score"]
+        script_score = quality_check["script_quality"]["score"]
+        quality_check["overall_score"] = (story_score + script_score) // 2
+        
+        return quality_check
+    
+    def _check_story_quality(self, story: 'ShortStory') -> Dict[str, Any]:
+        """이야기 품질 검증"""
+        issues = []
+        score = 100
+        
+        # 길이 검증
+        if story.word_count < 50:
+            issues.append("이야기가 너무 짧습니다")
+            score -= 20
+        elif story.word_count > 200:
+            issues.append("이야기가 너무 깁니다")
+            score -= 10
+        
+        if story.sentence_count < 5:
+            issues.append("문장 수가 부족합니다")
+            score -= 15
+        elif story.sentence_count > 15:
+            issues.append("문장 수가 너무 많습니다")
+            score -= 10
+        
+        # 내용 검증
+        if not story.title or len(story.title.strip()) < 3:
+            issues.append("제목이 부적절합니다")
+            score -= 10
+        
+        if not story.content or len(story.content.strip()) < 20:
+            issues.append("내용이 부족합니다")
+            score -= 25
+        
+        return {
+            "score": max(0, score),
+            "issues": issues,
+            "word_count": story.word_count,
+            "sentence_count": story.sentence_count
+        }
+    
+    def _check_script_quality(self, script: 'TeacherTalkScript') -> Dict[str, Any]:
+        """교사 스크립트 품질 검증"""
+        issues = []
+        score = 100
+        
+        # 각 섹션별 검증
+        sections = {
+            "opening": script.opening,
+            "during_reading": script.during_reading,
+            "after_reading": script.after_reading,
+            "key_expression_practice": script.key_expression_practice,
+            "wrap_up": script.wrap_up
+        }
+        
+        for section_name, section_content in sections.items():
+            if not section_content or len(section_content) == 0:
+                issues.append(f"{section_name} 섹션이 비어있습니다")
+                score -= 15
+            elif len(section_content) < 2:
+                issues.append(f"{section_name} 섹션의 내용이 부족합니다")
+                score -= 10
+        
+        return {
+            "score": max(0, score),
+            "issues": issues,
+            "sections_count": len([s for s in sections.values() if s and len(s) > 0])
+        }
 

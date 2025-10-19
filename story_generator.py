@@ -4,8 +4,14 @@ CEFR A1 수준의 초등학생용 영어 이야기 생성
 """
 
 import re
+import os
 from typing import List
+from openai import OpenAI
+from dotenv import load_dotenv
 from models import Unit, ShortStory
+
+# 환경변수 로드
+load_dotenv()
 
 
 class StoryGenerator:
@@ -15,22 +21,26 @@ class StoryGenerator:
         self.max_sentences = 10
         self.min_sentences = 8
         self.max_words_per_sentence = 9
+        api_key = os.getenv('OPENAI_API_KEY')
+        print(f"API Key loaded: {'Yes' if api_key else 'No'}")
+        print(f"API Key length: {len(api_key) if api_key else 0}")
+        self.client = OpenAI(api_key=api_key) if api_key else None
         
     def generate_story(self, unit: Unit) -> ShortStory:
         """Unit 정보를 바탕으로 Short Story 생성"""
         
-        # 목표 언어 요소들을 하나의 문자열로 결합
-        target_elements = []
-        target_elements.extend(unit.target_communicative_functions)
-        target_elements.extend(unit.target_grammar_forms)
-        target_elements.extend(unit.target_vocabulary)
+        print(f"Story generation started for unit: {unit.target_vocabulary}")
         
-        # 이야기 생성 프롬프트 구성
-        prompt = self._create_story_prompt(unit, target_elements)
-        
-        # 실제 구현에서는 OpenAI API를 사용하지만, 
-        # 데모를 위해 규칙 기반 생성으로 대체
-        story_content = self._generate_story_content(unit, target_elements)
+        try:
+            # OpenAI API를 사용하여 이야기 생성
+            print("Attempting LLM generation...")
+            story_content = self._generate_story_with_llm(unit)
+            print(f"LLM generation successful. Content length: {len(story_content)}")
+        except Exception as e:
+            print(f"LLM 생성 실패, 폴백 사용: {e}")
+            # LLM 실패 시 폴백으로 규칙 기반 생성 사용
+            story_content = self._generate_story_content(unit, unit.target_vocabulary)
+            print(f"Fallback generation used. Content length: {len(story_content)}")
         
         # 문장 수와 단어 수 계산
         sentences = self._split_into_sentences(story_content)
@@ -44,24 +54,58 @@ class StoryGenerator:
             sentence_count=sentence_count
         )
     
+    def _generate_story_with_llm(self, unit: Unit) -> str:
+        """OpenAI API를 사용하여 이야기 생성"""
+        if not self.client:
+            raise Exception("OpenAI API 키가 설정되지 않았습니다.")
+            
+        prompt = self._create_story_prompt(unit, unit.target_vocabulary)
+        print(f"Generated prompt: {prompt[:200]}...")
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "You are an expert English teacher creating educational stories for Korean elementary students."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            
+            content = response.choices[0].message.content.strip()
+            print(f"LLM response received. Length: {len(content)}")
+            print(f"LLM content preview: {content[:100]}...")
+            return content
+            
+        except Exception as e:
+            print(f"OpenAI API call failed: {e}")
+            raise e
+    
     def _create_story_prompt(self, unit: Unit, target_elements: List[str]) -> str:
         """이야기 생성용 프롬프트 생성"""
-        prompt = f"""
-        초등학생용 영어 Short Story를 생성해주세요.
-        
-        요구사항:
-        1. 8-10개의 문장으로 구성
-        2. 각 문장은 최대 9개의 단어
-        3. CEFR A1 수준의 쉬운 영어
-        4. 한국 초등학생의 정서에 맞는 긍정적인 내용
-        
-        포함해야 할 요소:
-        - 의사소통 기능: {', '.join(unit.target_communicative_functions)}
-        - 문법 형태: {', '.join(unit.target_grammar_forms)}
-        - 어휘: {', '.join(unit.target_vocabulary)}
-        
-        이야기는 간단하고 명확하며, 학생들이 쉽게 이해할 수 있어야 합니다.
-        """
+        prompt = f"""Create a short English story for Korean elementary students (CEFR A1 level).
+
+REQUIREMENTS:
+- Write exactly 8-10 sentences
+- Each sentence must have maximum 9 words
+- Use simple, clear English that 3rd-6th grade Korean students can understand
+- Create a positive, engaging story suitable for Korean children
+- Include a clear beginning, middle, and end
+
+MUST INCLUDE THESE ELEMENTS:
+- Communication function: {', '.join(unit.target_communicative_functions)}
+- Grammar patterns: {', '.join(unit.target_grammar_forms)}
+- Vocabulary words: {', '.join(unit.target_vocabulary)}
+
+STORY STRUCTURE:
+1. Introduce characters and setting
+2. Present a simple problem or situation
+3. Show characters trying to solve it
+4. Resolve the problem
+5. End with a positive message
+
+Make sure to naturally incorporate ALL the target vocabulary and grammar patterns into the story. The story should be educational but also fun and engaging for young learners.
+
+Write ONLY the story content, no title or additional text."""
         return prompt
     
     def _generate_story_content(self, unit: Unit, target_elements: List[str]) -> str:
